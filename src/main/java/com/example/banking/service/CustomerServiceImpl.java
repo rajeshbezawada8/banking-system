@@ -4,7 +4,6 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
-import org.apache.catalina.valves.LoadBalancerDrainingValve;
 import org.springframework.stereotype.Service;
 
 import com.example.banking.dto.customer.CreateUserRequest;
@@ -12,10 +11,11 @@ import com.example.banking.dto.customer.UpdateUserRequest;
 import com.example.banking.dto.customer.UserResponse;
 import com.example.banking.entity.Account;
 import com.example.banking.entity.Customer;
-import com.example.banking.enums.AccountType;
 import com.example.banking.enums.CustomerStatus;
 import com.example.banking.repository.AccountRepository;
 import com.example.banking.repository.CustomerRepository;
+
+import jakarta.transaction.Transactional;
 @Service
 public class CustomerServiceImpl implements CustomerService {
 	private CustomerRepository customerRepo;
@@ -27,6 +27,7 @@ public class CustomerServiceImpl implements CustomerService {
 	}
 
 	@Override
+	@Transactional
 	public UserResponse createUser(CreateUserRequest request) {
 		Customer customer = new Customer();
 		Account account = new Account();
@@ -39,13 +40,18 @@ public class CustomerServiceImpl implements CustomerService {
 		customer.setPassword(request.getPassword());
 		customer.setCustomerStatus(CustomerStatus.ACTIVE);
 		customer.setLastLogin(LocalDateTime.now());
+		customer.setCreatedAt(LocalDateTime.now());
+
 		account.setAccountNumber(request.getAccountNumber());
-		account.setAccountType(AccountType.SAVING);
+		account.setAccountType(request.getAccountType());
 		account.setBalance(BigDecimal.ZERO);
+		
 		customer.setAccount(account);
-		Customer save = customerRepo.save(customer);
 		accountRepo.save(account);
+		Customer save = customerRepo.save(customer);
+
 		return convertToResponse(save);
+
 	}
 
 	@Override
