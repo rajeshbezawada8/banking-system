@@ -12,46 +12,43 @@ import com.example.banking.dto.customer.UserResponse;
 import com.example.banking.entity.Account;
 import com.example.banking.entity.Customer;
 import com.example.banking.enums.CustomerStatus;
+import com.example.banking.mapper.UserMapper;
 import com.example.banking.repository.AccountRepository;
 import com.example.banking.repository.CustomerRepository;
 
 import jakarta.transaction.Transactional;
+
 @Service
 public class CustomerServiceImpl implements CustomerService {
 	private CustomerRepository customerRepo;
 	private AccountRepository accountRepo;
+	private final UserMapper userMapper;
 
-	public CustomerServiceImpl(CustomerRepository customerRepo, AccountRepository accountRepo) {
+	public CustomerServiceImpl(CustomerRepository customerRepo, AccountRepository accountRepo, UserMapper userMapper) {
 		this.customerRepo = customerRepo;
 		this.accountRepo = accountRepo;
+		this.userMapper = userMapper;
 	}
 
 	@Override
 	@Transactional
 	public UserResponse createUser(CreateUserRequest request) {
-		Customer customer = new Customer();
-		Account account = new Account();
-		customer.setUserId(request.getUserId());
-		customer.setFirstName(request.getFirstName());
-		customer.setLastName(request.getLastName());
-		customer.setPhoneNumber(request.getPhoneNumber());
-		customer.setEmail(request.getEmail());
-		customer.setDateOfBirth(request.getDateOfBirth());
-		customer.setPassword(request.getPassword());
+		Customer customer = userMapper.toEntity(request);
 		customer.setCustomerStatus(CustomerStatus.ACTIVE);
 		customer.setLastLogin(LocalDateTime.now());
 		customer.setCreatedAt(LocalDateTime.now());
 
+		Account account = new Account();
+
 		account.setAccountNumber(request.getAccountNumber());
 		account.setAccountType(request.getAccountType());
-		account.setBalance(BigDecimal.ZERO);
-		
+
 		customer.setAccount(account);
+
 		accountRepo.save(account);
 		Customer save = customerRepo.save(customer);
 
 		return convertToResponse(save);
-
 	}
 
 	@Override

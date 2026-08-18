@@ -4,6 +4,7 @@ import java.time.LocalDate;
 
 import com.example.banking.enums.AccountType;
 
+
 public class CreateUserRequest {
 
 	// Variables required from Customer entity
@@ -11,7 +12,9 @@ public class CreateUserRequest {
 	private String userId;
 	private String firstName;
 	private String lastName;
+	
 	private String phoneNumber;
+	
 	private String email;
 	private LocalDate dateOfBirth;
 	private String password;
