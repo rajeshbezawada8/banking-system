@@ -1,6 +1,5 @@
-package com.example.banking.service;
+package com.example.banking.service.implementation;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
@@ -15,6 +14,7 @@ import com.example.banking.enums.CustomerStatus;
 import com.example.banking.mapper.UserMapper;
 import com.example.banking.repository.AccountRepository;
 import com.example.banking.repository.CustomerRepository;
+import com.example.banking.service.CustomerService;
 
 import jakarta.transaction.Transactional;
 
